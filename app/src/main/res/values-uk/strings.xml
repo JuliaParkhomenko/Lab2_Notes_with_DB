@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name = "app_name">Нотатки</string>
+    <string name = "importance_red" > Дуже важливо </string>
+    <string name = "importance_yellow" > Важливо</string>
+    <string name = "importance_green" > Не дуже важливо </string>
+    <string name = "add_noteBtn" > Додати нову нотатку </string>
+    <string name = "filter_noteBtn" > Фільтр </string>
+    <string name = "search_noteBtn" > Пошук </string>
+    <string name = "filterShowAll" > Всі </string>
+    <string name = "filterByMostImportant_noteBtn" > Найважливіші </string>
+    <string name = "filterByImportant_noteBtn" > Важливі </string>
+    <string name = "filterByNotVeryImportant_noteBtn" > Не дуже важливі </string>
+    <string name = "dataSaved" > Дані збережено </string>
+    <string name = "dataNotSaved" > Дані не збережено </string>
+    <string name = "noDataYet" > У вас ще немає даних. </string>
+    <string name = "dataRecovered" > Дані відновлено </string>
+
+    <string name = "menu_edit" > Редагувати нотатку </string>
+    <string name = "menu_delete" > Видалити нотатку </string>
+
+    <string name = "title" > Назва </string>
+    <string name = "description" > Опис </string>
+    <string name = "uploadImage" > Завантажити зображення </string>
+    <string name = "saveNote" > Зберегти </string>
+    <string name = "error_fillAllFields" > Будь ласка, заповніть всі поля! </string>
+
+    <string-array name="importance">
+        <item>@string/importance_red</item>
+        <item>@string/importance_yellow</item>
+        <item>@string/importance_green</item>
+    </string-array>
+</resources>

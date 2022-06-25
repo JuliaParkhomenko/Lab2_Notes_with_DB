@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Notes</string>
+    <string name="importance_red"> Very important </string>
+    <string name="importance_yellow"> Important </string>
+    <string name="importance_green"> Not very important </string>
+    <string name="add_noteBtn"> Add new note </string>
+    <string name="filter_noteBtn"> Filter </string>
+    <string name="search_noteBtn"> Search </string>
+    <string name = "filterShowAll" > All </string>
+    <string name = "filterByMostImportant_noteBtn" > Most important </string>
+    <string name = "filterByImportant_noteBtn" > Important </string>
+    <string name = "filterByNotVeryImportant_noteBtn" > Not very important </string>
+    <string name = "dataSaved" > Data saved </string>
+    <string name = "dataNotSaved" > Data isn`t saved </string>
+    <string name = "noDataYet" > Hello! You haven`t any data yet. </string>
+    <string name = "dataRecovered" > Data recovered </string>
+
+    <string name = "menu_edit" > Edit note </string>
+    <string name = "menu_delete" > Delete note </string>
+
+    <string name = "title" > Title </string>
+    <string name = "description" > Description </string>
+    <string name = "uploadImage" > Upload image </string>
+    <string name = "saveNote" > Save </string>
+    <string name = "error_fillAllFields" > Please fill all fields! </string>
+
+    <string-array name="importance">
+        <item>@string/importance_red</item>
+        <item>@string/importance_yellow</item>
+        <item>@string/importance_green</item>
+    </string-array>
+</resources>

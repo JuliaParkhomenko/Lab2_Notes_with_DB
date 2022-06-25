@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/btnSearch"
+        android:icon="@drawable/ic_search"
+        android:title="@string/search_noteBtn"
+        android:queryHint="Search"
+        android:orderInCategory="2"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="always"
+        app:iconifiedByDefault="false"/>
+    <item
+        android:id="@+id/btnFilter"
+        android:icon="@drawable/ic_filter"
+        android:title="@string/filter_noteBtn"
+        android:orderInCategory="1"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/btnFilterShowAll"
+                android:title="@string/filterShowAll"
+                app:showAsAction="always" />
+            <item
+                android:id="@+id/btnFilterByMostImportant"
+                android:title="@string/filterByMostImportant_noteBtn"
+                app:showAsAction="always" />
+            <item
+                android:id="@+id/btnFilterByImportant"
+                android:title="@string/filterByImportant_noteBtn"
+                app:showAsAction="always" />
+            <item
+                android:id="@+id/btnFilterByNotVeryImportant"
+                android:title="@string/filterByNotVeryImportant_noteBtn"
+                app:showAsAction="always" />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/btnAddNote"
+        android:icon="@drawable/ic_plus"
+        android:orderInCategory="0"
+        android:title="@string/add_noteBtn"
+        app:showAsAction="always" />
+</menu>
