@@ -24,6 +24,7 @@
     <string name = "uploadImage" > Upload image </string>
     <string name = "saveNote" > Save </string>
     <string name = "error_fillAllFields" > Please fill all fields! </string>
+    <string name = "imageAndNoteDeleted" > Note deleted! </string>
 
     <string-array name="importance">
         <item>@string/importance_red</item>

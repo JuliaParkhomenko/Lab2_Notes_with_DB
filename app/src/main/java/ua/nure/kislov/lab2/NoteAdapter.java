@@ -111,9 +111,9 @@ public class NoteAdapter<N> extends ArrayAdapter<Note> implements Filterable {
         }
 
         ImageView ivImage = currentItemView.findViewById(R.id.iv_notePicture);
-        if(note.getImage()!=null) {
-            Bitmap myBitmap = BitmapFactory.decodeByteArray(note.getImage(), 0, note.getImage().length);
-            //Bitmap myBitmap = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+ File.separator + note.getImagePath()+".jpg");
+        if(note.getIsImage()) {
+            Bitmap myBitmap = note.getImageBitmap(); //BitmapFactory.decodeByteArray(note.getImage(), 0, note.getImage().length);
+            //Bitmap myBitmap = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+ File.separator + note.getId()+".jpg");
             ivImage.setImageBitmap(myBitmap);
         }
         else {

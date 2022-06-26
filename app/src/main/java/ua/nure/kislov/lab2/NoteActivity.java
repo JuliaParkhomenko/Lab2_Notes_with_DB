@@ -1,5 +1,6 @@
 package ua.nure.kislov.lab2;
 
+import android.Manifest;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,6 +20,8 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 import com.google.android.material.textfield.TextInputEditText;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -63,7 +66,7 @@ public class NoteActivity extends AppCompatActivity {
         String action = inputIntent.getAction();
         //String index_position = null;
         int index_position=0;
-
+        ImageView iv_importance = findViewById(R.id.iv_importance);
         // в зависимости от action заполняем переменные
         if (action.equals("android.intent.action.EDIT")) {
             //sqLiteManager.populateNoteListArray();
@@ -79,7 +82,7 @@ public class NoteActivity extends AppCompatActivity {
             TextInputEditText et_description = findViewById(R.id.et_description);
             ImageView iv_image = findViewById(R.id.iv_photo);
 
-            if (note.getImage()!=null) {
+            if (note.getIsImage()) {
                 /*ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                 File bitmapFile = new File(Environment.getExternalStorageDirectory() + File.separator + note.getImagePath()+".jpg");
                 FileInputStream fileInputStream = null;
@@ -95,8 +98,9 @@ public class NoteActivity extends AppCompatActivity {
                 BitmapFactory.decodeByteArray(imgByte, 0, imgByte.length);
                 */
 
-                Bitmap myBitmap = BitmapFactory.decodeByteArray(note.getImage(), 0, note.getImage().length);
+                Bitmap myBitmap = note.getImageBitmap();//BitmapFactory.decodeByteArray(note.getImage(), 0, note.getImage().length);
                 iv_image.setImageBitmap(myBitmap);
+                iv_importance.setImageResource(note.getImportanceImage(note.getImportance()));
             } else {
                 iv_image.setImageResource(R.drawable.note_default_img);
             }
@@ -104,14 +108,17 @@ public class NoteActivity extends AppCompatActivity {
             et_description.setText(note.getDescription());
             et_title.setText(note.getTitle());
             spinner.setSelection(note.getImportance());
+            iv_importance.setVisibility(View.INVISIBLE);
 
             outputIntent.putExtra("action", "edit");
             outputIntent.putExtra("INDEX_POSITION", index_position);
         } else if (action.equals("android.intent.action.CREATE")) {
+            iv_importance.setVisibility(View.GONE);
             ImageView img = (ImageView) findViewById(R.id.iv_photo);
             img.setImageResource(R.drawable.note_default_img);
-            note = new Note(sqLiteManager.getNewNoteId(), "", "","", 0, null);
+            note = new Note(sqLiteManager.getNewNoteId(), "", "","", 0, false);
             outputIntent.putExtra("action", "create");
+            iv_importance.setVisibility(View.GONE);
         }
         else if (action.equals("android.intent.action.DISPLAY")) {
             TextInputEditText et_title = findViewById(R.id.et_title);
@@ -138,15 +145,17 @@ public class NoteActivity extends AppCompatActivity {
                 index_position = inputIntent.getIntExtra("INDEX_POSITION", -1); // default value causes an error!
             }
             note = sqLiteManager.getNoteByIndex(index_position);
-            if (note.getImage()!=null) {
-                Bitmap myBitmap = BitmapFactory.decodeByteArray(note.getImage(), 0, note.getImage().length);
+            if (note.getIsImage()) {
+                Bitmap myBitmap = note.getImageBitmap();//BitmapFactory.decodeByteArray(note.getImage(), 0, note.getImage().length);
                 iv_image.setImageBitmap(myBitmap);
             } else {
                 iv_image.setImageResource(R.drawable.note_default_img);
             }
             et_description.setText(note.getDescription());
             et_title.setText(note.getTitle());
-            spinner.setSelection(note.getImportance());
+            spinner.setVisibility(View.INVISIBLE);
+            //spinner.setSelection(note.getImportance());
+            iv_importance.setImageResource(note.getImportanceImage(note.getImportance()));
         }
     }
 
@@ -175,12 +184,42 @@ public class NoteActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         ImageView imageView = (ImageView)findViewById(R.id.iv_photo);
+
         if (!imageView.getDrawable().getConstantState().equals(getDrawable(R.drawable.note_default_img).getConstantState()) ) {
+            String filename = "temp.jpg";
             Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
 
-            File folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                File folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                File file = new File(folder,filename);
+                try {
+                        file.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+//Запись
+                FileOutputStream fileOutputStream;
+                try {
+                    fileOutputStream = new FileOutputStream(file);
+                    fileOutputStream.write(bytes.toByteArray());
+                    fileOutputStream.close();
+                } catch (Exception e) {
+                   e.printStackTrace();
+                }
+
+            /*File folder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/NotesImages/");
+
+            folder.mkdirs();
+            File file = new File(folder,filename);
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }*/
+
+
+            /*File folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
             File file = new File(folder,"temp.jpg");
             try {
                 if(!file.exists())
@@ -199,7 +238,7 @@ public class NoteActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
+*/
             //if(inputIntent.getAction().equals("android.intent.action.CREATE"))
             outState.putString("IMAGE", "temp.jpg");
         }
@@ -210,8 +249,11 @@ public class NoteActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
         if(savedInstanceState.containsKey("IMAGE")){
             ImageView imageView = findViewById(R.id.iv_photo);
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            File bitmapFile = new File(Environment.getExternalStorageDirectory() + File.separator + savedInstanceState.getString("IMAGE"));
+            //ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            Bitmap myBitmap = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+ File.separator+savedInstanceState.getString("IMAGE"));
+
+
+            /*File bitmapFile = new File(Environment.getExternalStorageDirectory() + File.separator + savedInstanceState.getString("IMAGE"));
             FileInputStream fileInputStream;
             try {
                 fileInputStream = new FileInputStream(bitmapFile);
@@ -221,9 +263,10 @@ public class NoteActivity extends AppCompatActivity {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
-            }
+                Bitmap myBitmap = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+ File.separator + savedInstanceState.getString("IMAGE"));
 
-            Bitmap myBitmap = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+ File.separator + savedInstanceState.getString("IMAGE"));
+            }*/
+
             imageView.setImageBitmap(myBitmap);
 
         }
@@ -245,6 +288,9 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     public void uploadImage(View view) {
+        /*ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                23);
+         */
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         activityResultLauncher.launch(intent);
     }
@@ -262,8 +308,30 @@ public class NoteActivity extends AppCompatActivity {
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
                 byte[] image = bytes.toByteArray();
-                note.setImage(image);
+                note.setIsImage();
+                File folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+
+                // Storing the data in file with name as noteTitle.jpg
+                File file = new File(folder,note.getId()+".jpg");
+                try {
+                    if(file.exists()) {
+                        file.delete();
+                    }
+                    file.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+//Запись
+                FileOutputStream fileOutputStream = null;
+                try {
+                    fileOutputStream = new FileOutputStream(file);
+                    fileOutputStream.write(bytes.toByteArray());
+                    fileOutputStream.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
+
             Spinner spinner = findViewById(R.id.spinner);
             note.setImportance(spinner.getSelectedItemPosition());
             note.setDescription(et_description.getText().toString());

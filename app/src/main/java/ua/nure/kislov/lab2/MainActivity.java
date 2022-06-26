@@ -34,16 +34,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         notesList = findViewById(R.id.notesList);
+        sqLiteManager = SQLiteManager.instanceOfDatabase(this);
         if(savedInstanceState==null) {
             loadNotesFromDB();
             noteAdapter = new NoteAdapter(this, R.layout.view_note, sqLiteManager.getNotesList());
             notesList.setAdapter(noteAdapter);
             Toast.makeText(this, R.string.dataRecovered, Toast.LENGTH_LONG).show();
         }else{
-            //notes=savedInstanceState.getParcelableArrayList("NOTES");
+            sqLiteManager.setNotesList(savedInstanceState.getParcelableArrayList("NOTES"));
             noteAdapter = new NoteAdapter(this, R.layout.view_note, sqLiteManager.getNotesList());
             notesList.setAdapter(noteAdapter);
-            Toast.makeText(this, R.string.noDataYet, Toast.LENGTH_LONG).show();
         }
         notesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -63,8 +63,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         SearchView searchView = findViewById(R.id.btnSearch);
-        //outState.putParcelableArrayList("NOTES", notes);
+        outState.putParcelableArrayList("NOTES", sqLiteManager.getNotesList());
         outState.putString("IMPORTANCE", importance);
+
 
         if(!searchView.getQuery().toString().isEmpty()){
             outState.putString("QUERY", searchView.getQuery().toString());
@@ -246,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadNotesFromDB() {
-        sqLiteManager = SQLiteManager.instanceOfDatabase(this);
+        //sqLiteManager = SQLiteManager.instanceOfDatabase(this);
         sqLiteManager.populateNoteListArray();
         // MAYBE IT REQUIRES
         // notesList = sqLiteManager.getNotesList();

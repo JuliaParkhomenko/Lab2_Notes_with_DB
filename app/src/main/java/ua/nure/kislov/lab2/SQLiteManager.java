@@ -5,7 +5,19 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Environment;
+import android.os.Parcelable;
+import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +36,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     private static final String DESCRIPTION_FIELD = "description";
     private static final String DATE_FIELD = "date";
     private static final String IMPORTANCE_FIELD = "importance";
+    //private static final String IMAGE_FIELD = "image";
     private static final String IMAGE_FIELD = "image";
 
 
@@ -57,7 +70,10 @@ public class SQLiteManager extends SQLiteOpenHelper {
                 .append(IMPORTANCE_FIELD)
                 .append(" INT, ")
                 .append(IMAGE_FIELD)
-                .append(" BLOB)");
+                .append(" INT)");
+                //.append(IMAGE_FIELD)
+                //.append(" BLOB)");
+
 
         sqLiteDatabase.execSQL(sql.toString());
     }
@@ -84,13 +100,17 @@ public class SQLiteManager extends SQLiteOpenHelper {
         contentValues.put(DESCRIPTION_FIELD, note.getDescription());
         contentValues.put(DATE_FIELD, note.getDateTime());
         contentValues.put(IMPORTANCE_FIELD, note.getImportance());
-        contentValues.put(IMAGE_FIELD, note.getImage());
+        //contentValues.put(IMAGE_FIELD, note.getImage());
+        contentValues.put(IMAGE_FIELD, note.isImage());
 
         sqLiteDatabase.insert(TABLE_NAME, null, contentValues);
     }
     public void removeNote(int pos) {
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+File.separator+notes.get(pos).getId()+".jpg");
+        file.delete();
         removeNoteFromDB(pos);
         removeNoteFromList(pos);
+
     }
 
     private void removeNoteFromList(int pos) {
@@ -100,7 +120,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     private void removeNoteFromDB(int pos) {
         //todo
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-        sqLiteDatabase.delete(TABLE_NAME, ID_FIELD+" =? ", new String[]{String.valueOf(pos)});
+        sqLiteDatabase.delete(TABLE_NAME, ID_FIELD+" =? ", new String[]{String.valueOf(notes.get(pos).getId())});
     }
 
     public void updateNote(Note note){
@@ -125,7 +145,8 @@ public class SQLiteManager extends SQLiteOpenHelper {
         contentValues.put(DESCRIPTION_FIELD, note.getDescription());
         contentValues.put(DATE_FIELD, note.getDateTime());
         contentValues.put(IMPORTANCE_FIELD, note.getImportance());
-        contentValues.put(IMAGE_FIELD, note.getImage());
+        //contentValues.put(IMAGE_FIELD, note.getImage());
+        contentValues.put(IMAGE_FIELD, note.isImage());
 
         sqLiteDatabase.update(TABLE_NAME, contentValues, ID_FIELD+" =? ", new String[]{String.valueOf(note.getId())});
     }
@@ -135,33 +156,44 @@ public class SQLiteManager extends SQLiteOpenHelper {
         Note note=null;
         Cursor result = sqLiteDatabase.rawQuery("SELECT * FROM "+ TABLE_NAME, null);
         notes=new ArrayList<Note>();
-        if(result.getCount()!=0){
-            while ((result.moveToNext())){
+        if(result.getCount()!=0) {
+            while ((result.moveToNext())) {
                 int id = result.getInt(1);
                 String title = result.getString(2);
                 String description = result.getString(3);
                 String date = result.getString(4);
                 int importance = result.getInt(5);
-                byte[] image = result.getBlob(6);
-                note = new Note(id, title, description, date, importance, image);
-                notes.add(note);
+                boolean isImage = result.getInt(6)==1?true:false;
+                    /*String pathName = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+ File.separator+id+".jpg";
+                    Bitmap myBitmap = BitmapFactory.decodeFile(pathName);
+                    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                    myBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                    image = bytes.toByteArray();
+                    */
+                    note = new Note(id, title, description, date, importance, isImage);
+                    notes.add(note);
+
             }
-            newNoteId=note.getId()+1;
-        }
-        else {
-            newNoteId=1;
-        }
-        result.close();
-    }
+                    newNoteId = note.getId()+1; //!!!!!!!!!!!!!!!!!!!
+                } else {
+                    newNoteId = 1;
+                }
+                result.close();
+            }
+
     public int getNewNoteId(){
         return newNoteId++;
     }
 
-    public List<Note> getNotesList() {
+    public ArrayList<Note> getNotesList() {
         return notes;
     }
     public Note getNoteByIndex(int index){
         return notes.get(index);
+    }
+
+    public void setNotesList(ArrayList notes) {
+        this.notes=notes;
     }
 
 

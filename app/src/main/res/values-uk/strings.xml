@@ -24,6 +24,7 @@
     <string name = "uploadImage" > Завантажити зображення </string>
     <string name = "saveNote" > Зберегти </string>
     <string name = "error_fillAllFields" > Будь ласка, заповніть всі поля! </string>
+    <string name = "imageAndNoteDeleted" > Нотатку видалено! </string>
 
     <string-array name="importance">
         <item>@string/importance_red</item>
