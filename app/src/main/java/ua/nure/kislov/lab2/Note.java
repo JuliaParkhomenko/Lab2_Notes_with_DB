@@ -13,38 +13,34 @@ import java.util.Date;
 
 public class Note implements Parcelable {
     private int id;
-    //private byte[] image;
     private String dateTime;
     private String title;
     private int importance;
     private String description;
     private boolean isImage=false;
 
-    Note(int id, String title, String description, String date,  int importance, boolean isImage/*, byte[] image*/) {
+    Note(int id, String title, String description, String date,  int importance, boolean isImage) {
         this.id=id;
         this.title = title;
         this.description = description;
         if(date.isEmpty()){
         Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss aaa z"); //"dd.MM.yyyy HH:mm:ss aaa z"
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss aaa z");
         dateTime = simpleDateFormat.format(calendar.getTime());}
         else {
             dateTime=date;
         }
         this.importance = importance;
         this.isImage = isImage;
-        //this.image = image;
     }
 
     public Note(Parcel in) {
-        //dateTime = in.readTypedObject(Creator<Date>)/*readString()*/;
         id = in.readInt();
         dateTime = in.readString();
         title = in.readString();
         importance = in.readInt();
         description = in.readString();
         isImage = in.readBoolean();
-        //in.readByteArray(image);
     }
 
     public static final Creator<Note> CREATOR = new Creator<Note>() {
@@ -120,7 +116,7 @@ public class Note implements Parcelable {
 
     public void setDateTime() {
         Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss"); //"dd.MM.yyyy HH:mm:ss aaa z"
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss aaa z");
         dateTime = simpleDateFormat.format(calendar.getTime());
     }
 
@@ -128,21 +124,6 @@ public class Note implements Parcelable {
         return id;
     }
 
-    /*public byte[] getImage(){
-        return image;
-    }*/
-
-
-
-    /*public void setImage(byte[] image) {
-        this.image=image;
-    }*/
-
-    /*public int isImage() {
-        if(image!=null)
-            return 1;
-        return 0;
-    }*/
      @Override
      public int describeContents() {
          return 0;
@@ -156,12 +137,4 @@ public class Note implements Parcelable {
          parcel.writeString(description);
          parcel.writeBoolean(isImage);
      }
-
-    /*public String getImagePath() {
-        return imagePath;
-    }*/
-
-    /*public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
-    }*/
 }

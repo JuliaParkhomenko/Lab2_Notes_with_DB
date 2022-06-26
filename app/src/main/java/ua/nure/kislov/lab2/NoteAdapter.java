@@ -40,10 +40,7 @@ public class NoteAdapter<N> extends ArrayAdapter<Note> implements Filterable {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        // convertView which is recyclable view
-        View currentItemView = convertView;
-
+    public View getView(int position, View currentItemView, ViewGroup parent) {
         currentItemView = LayoutInflater.from(getContext()).inflate(R.layout.view_note, parent, false);
 
         ImageView importanceImage = currentItemView.findViewById(R.id.iv_importance);
@@ -112,8 +109,7 @@ public class NoteAdapter<N> extends ArrayAdapter<Note> implements Filterable {
 
         ImageView ivImage = currentItemView.findViewById(R.id.iv_notePicture);
         if(note.getIsImage()) {
-            Bitmap myBitmap = note.getImageBitmap(); //BitmapFactory.decodeByteArray(note.getImage(), 0, note.getImage().length);
-            //Bitmap myBitmap = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+ File.separator + note.getId()+".jpg");
+            Bitmap myBitmap = note.getImageBitmap();
             ivImage.setImageBitmap(myBitmap);
         }
         else {

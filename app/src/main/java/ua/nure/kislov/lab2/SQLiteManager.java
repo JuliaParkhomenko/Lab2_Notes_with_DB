@@ -36,7 +36,6 @@ public class SQLiteManager extends SQLiteOpenHelper {
     private static final String DESCRIPTION_FIELD = "description";
     private static final String DATE_FIELD = "date";
     private static final String IMPORTANCE_FIELD = "importance";
-    //private static final String IMAGE_FIELD = "image";
     private static final String IMAGE_FIELD = "image";
 
 
@@ -60,7 +59,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
                 .append(COUNTER)
                 .append(" INTEGER PRIMARY KEY AUTOINCREMENT, ")
                 .append(ID_FIELD)
-                .append(" INT, ")
+                .append(" INTEGER, ")
                 .append(TITLE_FIELD)
                 .append(" TEXT, ")
                 .append(DESCRIPTION_FIELD)
@@ -68,20 +67,19 @@ public class SQLiteManager extends SQLiteOpenHelper {
                 .append(DATE_FIELD)
                 .append(" TEXT, ")
                 .append(IMPORTANCE_FIELD)
-                .append(" INT, ")
+                .append(" INTEGER, ")
                 .append(IMAGE_FIELD)
-                .append(" INT)");
-                //.append(IMAGE_FIELD)
-                //.append(" BLOB)");
-
+                .append(" INTEGER)");
 
         sqLiteDatabase.execSQL(sql.toString());
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
+    public void onUpgrade(SQLiteDatabase db, int oldVersion,  int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_NAME);
+        onCreate(db);
     }
+
     public void addNote(Note note){
         addNoteToDB(note);
         addNoteToList(note);
@@ -100,7 +98,6 @@ public class SQLiteManager extends SQLiteOpenHelper {
         contentValues.put(DESCRIPTION_FIELD, note.getDescription());
         contentValues.put(DATE_FIELD, note.getDateTime());
         contentValues.put(IMPORTANCE_FIELD, note.getImportance());
-        //contentValues.put(IMAGE_FIELD, note.getImage());
         contentValues.put(IMAGE_FIELD, note.isImage());
 
         sqLiteDatabase.insert(TABLE_NAME, null, contentValues);
@@ -145,7 +142,6 @@ public class SQLiteManager extends SQLiteOpenHelper {
         contentValues.put(DESCRIPTION_FIELD, note.getDescription());
         contentValues.put(DATE_FIELD, note.getDateTime());
         contentValues.put(IMPORTANCE_FIELD, note.getImportance());
-        //contentValues.put(IMAGE_FIELD, note.getImage());
         contentValues.put(IMAGE_FIELD, note.isImage());
 
         sqLiteDatabase.update(TABLE_NAME, contentValues, ID_FIELD+" =? ", new String[]{String.valueOf(note.getId())});
@@ -164,17 +160,11 @@ public class SQLiteManager extends SQLiteOpenHelper {
                 String date = result.getString(4);
                 int importance = result.getInt(5);
                 boolean isImage = result.getInt(6)==1?true:false;
-                    /*String pathName = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+ File.separator+id+".jpg";
-                    Bitmap myBitmap = BitmapFactory.decodeFile(pathName);
-                    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                    myBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                    image = bytes.toByteArray();
-                    */
-                    note = new Note(id, title, description, date, importance, isImage);
-                    notes.add(note);
+                note = new Note(id, title, description, date, importance, isImage);
+                notes.add(note);
 
             }
-                    newNoteId = note.getId()+1; //!!!!!!!!!!!!!!!!!!!
+                    newNoteId = note.getId()+1;
                 } else {
                     newNoteId = 1;
                 }
@@ -188,6 +178,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     public ArrayList<Note> getNotesList() {
         return notes;
     }
+
     public Note getNoteByIndex(int index){
         return notes.get(index);
     }
@@ -196,14 +187,8 @@ public class SQLiteManager extends SQLiteOpenHelper {
         this.notes=notes;
     }
 
-
-
-
-
-    /*public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(CompressFormat.PNG, 0, outputStream);
-        return outputStream.toByteArray();
-        contentValues.put(IMAGE_FIELD, );
-    }*/
+    public void closeDB() {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        sqLiteDatabase.close();
+    }
 }

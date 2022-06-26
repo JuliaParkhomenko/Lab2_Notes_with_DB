@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop(){
         super.onStop();
+        sqLiteManager.closeDB();
         //saveData();
     }
 
@@ -227,14 +228,10 @@ public class MainActivity extends AppCompatActivity {
         Intent intent;
         switch (item.getItemId()) {
             case R.id.btnEditNote:
-                //Note noteForEdit = noteAdapter.getItemAtPosition(info.position);
-                //intent = new Intent("android.intent.action.EDIT");
                 intent = new Intent(this, NoteActivity.class);
                 intent.setAction("android.intent.action.EDIT");
                 intent.putExtra("INDEX_POSITION", info.position);
-                //intent.putExtra("noteForEdit", noteForEdit);
                 activityResultLauncher.launch(intent);
-                //noteAdapter.notifyDataSetChanged();
                 return true;
             case R.id.btnDeleteNote:
                 int pos = info.position;
@@ -247,7 +244,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadNotesFromDB() {
-        //sqLiteManager = SQLiteManager.instanceOfDatabase(this);
         sqLiteManager.populateNoteListArray();
         // MAYBE IT REQUIRES
         // notesList = sqLiteManager.getNotesList();
@@ -264,11 +260,8 @@ public class MainActivity extends AppCompatActivity {
                                 Intent data = activityResult.getData();
                                 Bundle extras = data.getExtras();
                                 String action = extras.getString("action");
-                                //Note newNote = data.getParcelableExtra("note");
                                 if (action.equals("create") || action.equals("edit")) {
                                     noteAdapter.notifyDataSetChanged();
-                                } else {
-                                    //Toast.makeText(MainActivity.this, "Operation canceled", Toast.LENGTH_LONG).show();
                                 }
                             }
                         }
